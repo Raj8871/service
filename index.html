@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Website</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Spartan:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Welcome Message -->
+  <header class="header">
+    <h1 class="logo">My Services</h1>
+    <div id="loginIcon" class="login-icon" onclick="showLogin()">🔒 Login</div>
+  </header>
+
+  <div class="welcome-text">
+    <span class="r">Welcome to </span>My Website
+    <br><br>
+    <button id="startButton" class="rajan"><a href="https://raj8871.github.io/live-cod-editor/">Start</a></button>
+  </div>
+    
+  <!-- Login Popup -->
+<div class="login-popup" id="loginPopup">
+  <div class="popup-content">
+    <h2>Login</h2>
+    <div id="step1">
+      <label for="email">Enter your Gmail:</label>
+      <input type="email" id="email" placeholder="example@gmail.com" required>
+      <button onclick="goToPassword()">Next</button>
+      <p id="emailError" class="error-message"></p>
+    </div>
+    <div id="step2" style="display: none;">
+      <label for="password">Enter your Password:</label>
+      <input type="password" id="password" placeholder="••••••••" required>
+      <button onclick="login()">Login</button>
+      <p id="passwordError" class="error-message"></p>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Login Popup */
+.login-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #2c3e50;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  color: #ecf0f1;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+}
+
+.popup-content {
+  text-align: center;
+}
+
+.popup-content h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.popup-content label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.popup-content input {
+  width: 80%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #7f8c8d;
+  border-radius: 5px;
+  background-color: #34495e;
+  color: #ecf0f1;
+  font-size: 16px;
+}
+
+.popup-content button {
+  padding: 12px 25px;
+  background-color: #4ca1af;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.popup-content button:hover {
+  background-color: #357a9e;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+</style>
+
+<script>
+function showLogin() {
+  document.getElementById("loginPopup").style.display = "block";
+}
+
+function goToPassword() {
+  const email = document.getElementById("email").value;
+  const emailError = document.getElementById("emailError");
+
+  // Validate Email
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+  if (emailPattern.test(email)) {
+    document.getElementById("step1").style.display = "none";
+    document.getElementById("step2").style.display = "block";
+    emailError.textContent = ''; // Clear error message
+  } else {
+    emailError.textContent = 'Please enter a valid Gmail address.';
+  }
+}
+
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const passwordError = document.getElementById("passwordError");
+
+  // Validate Password (Example: at least 8 characters)
+  if (password.length < 8) {
+    passwordError.textContent = 'Password must be at least 8 characters long.';
+  } else {
+    // Send data to server (you'll need backend code for this)
+    // Example with a mock server function: sendDataToServer(email, password);
+    
+    // Show success
+    alert("Login successful!");
+    document.getElementById("loginPopup").style.display = "none";
+    document.getElementById("loginIcon").style.display = "none"; // Hide login icon
+
+    // Clear error messages
+    passwordError.textContent = ''; // Clear error message
+
+    // Save data to database
+    saveUserData(email, password);
+  }
+}
+
+function saveUserData(email, password) {
+  // Example of saving data (you will need to implement server-side code to handle this)
+  console.log('Saving data to the server...', { email, password });
+
+  // AJAX Request to save user data (assuming you're using Node.js or similar backend)
+  // Example using fetch for a POST request
+  fetch('/saveUserData', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email: email, password: password }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('User data saved:', data);
+  })
+  .catch(error => {
+    console.error('Error saving user data:', error);
+  });
+}
+
+(function () {
+  "use strict";
+
+  // Prevent XSS Attacks by sanitizing user inputs
+  function sanitizeInput(input) {
+    const tempDiv = document.createElement("div");
+    tempDiv.textContent = input;
+    return tempDiv.innerHTML;
+  }
+
+  // Example: Sanitize all input fields automatically
+  const inputs = document.querySelectorAll("input, textarea");
+  inputs.forEach(input => {
+    input.addEventListener("input", (e) => {
+      e.target.value = sanitizeInput(e.target.value);
+    });
+  });
+
+  // Disable right-click to prevent unauthorized access
+  document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    console.warn("Right-click is disabled to enhance security.");
+  });
+
+  // Prevent debugging tools (like F12/DevTools)
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+      e.preventDefault();
+      console.warn("Developer tools are disabled.");
+    }
+  });
+
+  // Monitor DOM changes for suspicious activity
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes.length > 0) {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === 1 && node.tagName === "SCRIPT") {
+            console.error("Unauthorized script detected and removed!");
+            node.remove();
+          }
+        });
+      }
+    });
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // Secure cookies
+  document.cookie = "SecureCookie=SecureValue; Secure; HttpOnly; SameSite=Strict";
+
+  console.log("Basic security measures are active on this website.");
+})();
+
+
+</script>
+ 
+  
+  <!-- Services Section -->
+  <main class="services">
+    <h2>Our Services</h2>
+    <div class="service-list">
+      <a href="https://raj8871.github.io/kbhdgddyegtdgyyueyeyey/" class="service">
+        <div class="service-icon">🖼️</div>
+        <h3>Compress Your Photo</h3>
+      </a>
+      <a href="https://raj8871.github.io/background-remove/" class="service">
+        <div class="service-icon">🗑️</div>
+        <h3>Background Remove</h3>
+      </a>
+      <a href="https://raj8871.github.io/pdfjpgpnghdgdusydrf/" class="service">
+        <div class="service-icon">📄</div>
+        <h3>Photo to PDF/PNG/JPG</h3>
+      </a>
+      <a href="https://raj8871.github.io/QRksjsjshhdhdhdhd/" class="service">
+        <div class="service-icon">🔗</div>
+        <h3>Link to QR</h3>
+      </a>
+      <a href="https://raj8871.github.io/resumegjgfghyfdrjhkkhfdd/" class="service">
+        <div class="service-icon">📜</div>
+        <h3>Create Your Resume</h3>
+      </a>
+      <a href="https://raj8871.github.io/currency/" class="service">
+        <div class="service-icon">💱</div>
+        <h3>Currency Converter</h3>
+      </a>
+      <a href="https://raj8871.github.io/pgc/" class="service">
+        <div class="service-icon">🔒</div>
+        <h3>Secure Password Generator</h3>
+      </a>
+      <a href="https://raj8871.github.io/jokes/" class="service">
+        <div class="service-icon">😂</div>
+        <h3>Jokes</h3>
+      </a>
+      <a href="https://raj8871.github.io/whether/" class="service">
+        <div class="service-icon">☀️</div>
+        <h3>Weather</h3>
+      </a>
+      <a href="https://raj8871.github.io/password-strength/" class="service">
+        <div class="service-icon">💪</div>
+        <h3>Check Password Strength </h3>
+      </a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="social-icons">
+      <a href="https://www.facebook.com/people/Rajan-Maurya/pfbid0eMsD5uiiAqrCzFvTRcyjtvCmvxPT2aTRVKRBwUnqJurtSU7sgKRrerP1fsZ8ZHAtl/?mibextid=qi2Omg&rdid=My6ZGiCLzw3lC4aI&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2FewmEFeFG3xE6iVbC%2F%3Fmibextid%3Dqi2Omg" target="_blank">📘 Facebook</a>
+      <a href="https://raj8871.github.io/portfolio/#" target="_blank">🐦 Portfoliio </a>
+      <a href="https://www.instagram.com/_life_349/profilecard/?igsh=OG1jdHFkY3JqNG9s" target="_blank">📸 Instagram</a>
+      <a href="https://www.linkedin.com/in/rajan-kumar-7bb299327?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">💼 LinkedIn</a>
+    </div>
+    <p>© 2024 My Services. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
+
+
+
+
+<style>
+/* Remove text underline */
+a {
+  text-decoration: none;
+}
+
+h1, h2, h3 {
+  font-family: 'Spartan', sans-serif;
+  margin: 0;
+  padding: 0;
+  text-decoration: none; /* Ensures no underline under headings */
+}
+
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(to right, #1c1c1c, #333);
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  font-family: 'Spartan', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: 200;
+  color: #e74c3c;
+}
+
+.login-icon {
+  cursor: pointer;
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.login-icon:hover {
+  transform: scale(1.1);
+}
+
+
+
+
+/* Login Popup */
+.login-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  color: #000;
+  z-index: 1000;
+}
+
+.popup-content {
+  text-align: center;
+}
+
+.popup-content h2 {
+  margin-bottom: 15px;
+}
+
+.popup-content label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.popup-content input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.popup-content button {
+  padding: 10px 20px;
+  background-color: #4ca1af;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup-content button:hover {
+  background-color: #357a9e;
+}
+
+
+
+
+/* Welcome Section */
+.welcome-text {
+  text-align: center;
+  margin: 3em 0;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #e74c3c;
+  animation: fadeInDown 1.5s ease;
+}
+
+.welcome-text .r {
+  color: #3498db;
+}
+
+/* Button */
+
+.rajan {
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.rajan:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button-85 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.rajan:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+
+/* Animation Keyframes */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Services Section */
+.services {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.service-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.service {
+  background: #2c3e50;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  transition: transform 0.3s ease, background 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.service:hover {
+  transform: translateY(-5px);
+  background: #0EEDF6;
+}
+
+.service-icon {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.service h3 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background: #1c1c1c;
+  color: white;
+}
+
+.social-icons a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.social-icons a:hover {
+  color: #e74c3c;
+}
+
+/* Button with Gradient */
+.rajan {
+  padding: 0.8em 3em;
+  border: none;
+  outline: none;
+  background: #1abc9c;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 30px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.rajan:hover {
+  background: #16a085;
+  transform: scale(1.05);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .header {
+    padding: 15px;
+  }
+
+  .welcome-text {
+    font-size: 2.5rem;
+  }
+
+  .service-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .service h3 {
+    font-size: 1.1rem;
+  }
+
+  .service-icon {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-text {
+    font-size: 2rem;
+  }
+
+  .rajan {
+    font-size: 1rem;
+  }
+}
+
+
+
+
+</style>
